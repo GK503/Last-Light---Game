@@ -41,6 +41,9 @@ dependencies {
     runtimeOnly("org.openjfx:javafx-fxml:$fxVersion:$javafxPlatform")
     runtimeOnly("org.openjfx:javafx-media:$fxVersion:$javafxPlatform")
     runtimeOnly("org.openjfx:javafx-graphics:$fxVersion:$javafxPlatform")
+
+    implementation("org.graalvm.polyglot:polyglot:25.0.1")
+    implementation("org.graalvm.polyglot:python:25.0.1")
 }
 
 testing {

@@ -1,5 +1,6 @@
 package org.example;
 
+import org.graalvm.polyglot.*;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import java.util.ArrayList;
@@ -20,6 +21,16 @@ public class App extends JFrame implements KeyListener {
     public static ArrayList<Integer> ChunkmapX = new ArrayList<>();
     ArrayList<Integer> ChunkmapY = new ArrayList<>();
     public static void main(String[] args) {
+        try (Context context = Context.create("python")) {  
+            // Run a simple script
+            context.eval("python", "print('Hello from Python!')");
+            
+            // Or get a value back to Java
+            Value result = context.eval("python", "10 + 5");
+            System.out.println("Result from Python: " + result.asInt());
+        }
+    }
+    /*
         // Start the Swing application by creating the
         //  frame instance
         frame.setTitle("My Swing Application");
@@ -31,7 +42,7 @@ public class App extends JFrame implements KeyListener {
         frame.setVisible(true);
         player("defaultPlayer", Color.RED);
         player("defaultPlayer", Color.black);
-    }
+    */
 
     public static void player(String playername, Color color) {
         System.out.println("Player method called");
