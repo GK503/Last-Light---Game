@@ -1,30 +1,35 @@
 plugins {
     id 'java'
+    id 'application'
     id "org.graalvm.python" version "25.0.1"
 }
 
 group = 'org.example'
 version = '1.0-SNAPSHOT'
-// configure Java compatibility via the java extension (avoid setting unknown top-level properties)
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    // Core Polyglot API
     implementation "org.graalvm.polyglot:polyglot:25.0.1"
-    // Python language support
     implementation "org.graalvm.polyglot:python:25.0.1"
 }
 
 java {
-    // Use the traditional JavaVersion constants which are available in the Groovy DSL
     sourceCompatibility = JavaVersion.VERSION_17
     targetCompatibility = JavaVersion.VERSION_17
 }
+
 graalPy {
-    // Specify the python packages you need
     packages = ["numpy==2.1.0", "termcolor==2.2"]
 }
 
+application {
+    mainClass = 'org.example.App'   // <--- replace with your main class
+}
+
+run {
+    jvmArgs '-Dpolyglot.engine.WarnInterpreterOnly=false'
+    jvmArgs '-Dpolyglot.log.file=graal.log'
+}
