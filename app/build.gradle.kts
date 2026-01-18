@@ -30,6 +30,13 @@ dependencies {
         else -> "win"
     }
     val fxVersion = "20"
+    // compile-time (API) dependencies so JavaFX packages (javafx.scene.*) are available to the compiler
+    implementation("org.openjfx:javafx-controls:$fxVersion")
+    implementation("org.openjfx:javafx-fxml:$fxVersion")
+    implementation("org.openjfx:javafx-media:$fxVersion")
+    implementation("org.openjfx:javafx-graphics:$fxVersion")
+
+    // runtime-only platform-specific native libraries (DLLs / .so / .dylib)
     runtimeOnly("org.openjfx:javafx-controls:$fxVersion:$javafxPlatform")
     runtimeOnly("org.openjfx:javafx-fxml:$fxVersion:$javafxPlatform")
     runtimeOnly("org.openjfx:javafx-media:$fxVersion:$javafxPlatform")
