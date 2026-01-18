@@ -21,7 +21,14 @@ public class App extends JFrame implements KeyListener {
     public static ArrayList<Integer> ChunkmapX = new ArrayList<>();
     ArrayList<Integer> ChunkmapY = new ArrayList<>();
     public static void main(String[] args) {
-        try (Context context = Context.create("python")) {  
+        try (Context context = Context.create("python")) { 
+            
+            Value string = context.eval("python", ""
+                + "name = \"name\"\n"
+                + "print(f'Hello, {name}!')\n"
+            );
+            System.out.println(string);
+
             // Run a simple script
             context.eval("python", "print('Hello from Python!')");
             
