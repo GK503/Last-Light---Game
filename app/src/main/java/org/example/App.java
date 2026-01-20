@@ -2,11 +2,12 @@ package org.example;
 
 import org.graalvm.polyglot.*; // Import GraalVM Polyglot API "FOR PYTHON INTERPRETER"
 
+import java.util.ArrayList;
+import java.util.Random;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
-import java.util.ArrayList;
 import java.awt.Color;
 // import java.awt.FlowLayout; // not used (using null layout for absolute positioning)
 import java.awt.event.KeyEvent;
@@ -15,11 +16,8 @@ import java.net.URL;
 
 public class App extends JFrame implements KeyListener {
 
-    /*String chunksmap[][] = {
-            {"chunk1", "chunk2", "chunk3"},
-            {"chunk4", "chunk5", "chunk6"},
-            {"chunk7", "chunk8", "chunk9"}
-        };*/
+    ArrayList<ArrayList<Integer>> chunklist = new ArrayList<>();
+    public static Random random = new Random();
     int moveEnemyX = 0;
     int moveEnemyY = 0;
     int movePlayerX = 0;
@@ -30,7 +28,7 @@ public class App extends JFrame implements KeyListener {
     static JLabel player;
     static JLabel enemy;
     public static ArrayList<Integer> ChunkmapX = new ArrayList<>();
-    ArrayList<Integer> ChunkmapY = new ArrayList<>();
+    public static ArrayList<Integer> ChunkmapY = new ArrayList<>();
     public static void main(String[] args) {
         App myGame = new App(); // Create an instance of the App class to access non-static methods
 
@@ -82,7 +80,7 @@ public class App extends JFrame implements KeyListener {
                 player.setLocation(0, 0);
             }
 
-                        // Load image from classpath (resource files in src/main/resources are on the classpath root)
+            // Load image from classpath (resource files in src/main/resources are on the classpath root)
             URL urlenemy = App.class.getResource("/idle90.png");
             if (urlenemy == null) {
                 System.err.println("Missing resource: /idle90.png");
@@ -102,7 +100,48 @@ public class App extends JFrame implements KeyListener {
             frame.setVisible(true);
             frame.revalidate();
             frame.repaint();
+            InitializeTiles();
         });
+    }
+
+    public static void InitializeTiles() {
+        System.out.println("InitializeTiles method called");
+        int i = 0;
+        int j = 0;
+        int[][] chunk = Generate();
+        for (i = 0; i < 9; i++) {
+            for (j = 0; j < 9; j++) {
+                System.out.print(chunk[i][j] + " ");
+            }
+            System.out.println();
+        }
+        for (i = 0; i < 9; i++) {
+            for (j = 0; j < 9; j++) {
+                URL url = App.class.getResource("/" + chunk[i][j] + ".png");
+                if (url == null) {
+                    System.err.println("Missing resource: /idle90.png");
+                } else {
+                    JLabel tile = Object("tile" + i + j, null);
+                    ImageIcon tileimg = new ImageIcon(url);
+                    tile.setIcon(tileimg);
+                    // Ensure the label has the correct size so setLocation/setBounds work
+                    int tileWidth = tileimg.getIconWidth();
+                    int tileHeight = tileimg.getIconHeight();
+                    tile.setBounds(i * tileWidth, j * tileHeight, tileWidth, tileHeight);
+                    frame.add(tile);
+                }
+            }    
+        }
+    }
+    public static int[][] Generate() {
+            int[][] gerneratedchunk = new int[9][9];
+            for (int i = 0; i < 9; i++) {
+                for (int j = 0; j < 9; j++) {
+                    int temprand = random.nextInt(9);
+                    gerneratedchunk[i][j] = temprand;
+                }
+            }
+            return gerneratedchunk;
     }
 
     public static void MoveObject(int movex, int movey, JLabel obj) {
