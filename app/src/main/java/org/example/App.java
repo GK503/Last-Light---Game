@@ -2,6 +2,8 @@ package org.example;
 
 import org.graalvm.polyglot.*; // Import GraalVM Polyglot API "FOR PYTHON INTERPRETER"
 
+import java.util.List;
+import javax.swing.Timer;
 import java.util.ArrayList;
 import java.util.Random;
 import javax.swing.ImageIcon;
@@ -16,6 +18,7 @@ import java.net.URL;
 
 public class App extends JFrame implements KeyListener {
 
+    public static List<JLabel> projectiles = new ArrayList<>();
     ArrayList<ArrayList<Integer>> chunklist = new ArrayList<>();
     public static Random random = new Random();
     int moveEnemyX = 0;
@@ -80,28 +83,64 @@ public class App extends JFrame implements KeyListener {
                 player.setLocation(0, 0);
             }
 
-            // Load image from classpath (resource files in src/main/resources are on the classpath root)
-            URL urlenemy = App.class.getResource("/idle90.png");
-            if (urlenemy == null) {
-                System.err.println("Missing resource: /idle90.png");
-            } else {
-                ImageIcon enemyimg = new ImageIcon(urlenemy);
-                enemy.setIcon(enemyimg);
-                // Ensure the label has the correct size so setLocation/setBounds work
-                enemy.setSize(enemyimg.getIconWidth(), enemyimg.getIconHeight());
-                enemy.setLocation(0, 0);
-            }
-
-            // Add player and enemy to frame and show
-            //frame.add(player);
-            // make sure enemy is added too and doesn't overlap the player
             enemy.setLocation(100, 0);
             //frame.add(enemy);
             frame.setVisible(true);
             frame.revalidate();
             frame.repaint();
             InitializeTiles();
+            new Timer(50, e -> {
+                java.util.Iterator<JLabel> it = projectiles.iterator();
+                    while (it.hasNext()) {
+                        JLabel p = it.next();
+                        int x = p.getX();
+                            if (x < frame.getWidth()) {
+                                p.setLocation(x + 10, p.getY());
+                            } else {
+                                frame.remove(p);
+                                it.remove();
+                            }
+                    }
+                    frame.revalidate();
+                    frame.repaint();
+                }).start();
         });
+    }
+
+    public static void UpdateAnimation(char c) {
+    System.out.println("UpdateAnimation method called");
+    String base;
+    switch (c) {
+        case 'a': base = "/walk-90.";  updateicon("/idle-90.png", player); break;
+        case 'd': base = "/walk90.";   updateicon("/idle90.png",  player); break;
+        case 'w': base = "/walk0.";    updateicon("/idle0.png",   player); break;
+        case 's': base = "/walk180.";  updateicon("/idle180.png", player); break;
+        default:  updateicon("/idle0.png", player); return;
+    }
+
+    final int[] frameIndex = {1};
+    int delay = 50; // ms
+
+    new Timer(delay, e -> {
+        if (frameIndex[0] <= 5) {
+            updateicon(base + frameIndex[0] + ".png", player);
+            frameIndex[0]++;
+        } else {
+            ((Timer) e.getSource()).stop();
+        }
+    }).start();
+}
+
+
+    public static void updateicon(String resource, JLabel object) {
+        System.out.println("UpdatePlayerIcon method called");
+        if (resource == null) {
+            return; // No update if resource is null
+        }
+            URL url = App.class.getResource(resource);
+            ImageIcon img = new ImageIcon(url);
+            object.setIcon(img);
+            object.setSize(img.getIconWidth(), img.getIconHeight());
     }
 
     public static void InitializeTiles() {
@@ -119,7 +158,7 @@ public class App extends JFrame implements KeyListener {
             for (j = 0; j < 9; j++) {
                 URL url = App.class.getResource("/" + chunk[i][j] + ".png");
                 if (url == null) {
-                    System.err.println("Missing resource: /idle90.png");
+                    System.err.println("Missing resource: /idle" + chunk[i][j] + ".png");
                 } else {
                     JLabel tile = Object("tile" + i + j, null);
                     ImageIcon tileimg = new ImageIcon(url);
@@ -137,7 +176,7 @@ public class App extends JFrame implements KeyListener {
             int[][] gerneratedchunk = new int[9][9];
             for (int i = 0; i < 9; i++) {
                 for (int j = 0; j < 9; j++) {
-                    int temprand = random.nextInt(9);
+                    int temprand = random.nextInt(1, 10);
                     gerneratedchunk[i][j] = temprand;
                 }
             }
@@ -180,6 +219,30 @@ public class App extends JFrame implements KeyListener {
         ChunkmapY.add(chunky);
     }
 
+    public static void CreateProjectile(int movePlayerX, int movePlayerY) {
+        System.out.println("CreateProjectile method called");
+        JLabel projectile = Object("projectile", Color.YELLOW);
+        projectile.setBounds(movePlayerX + 20, movePlayerY + 10, 10, 10);
+        projectiles.add(projectile);
+        frame.repaint();
+        // Example size and position will change this after adding images
+        updateicon(null, projectile);
+        // Simple animation to move the projectile to the right
+
+        // Each projectile is overloading the queue thread making the projectile laggy and slower
+        /*new Timer(50, e -> {
+            int x = projectile.getX();
+            if (x < frame.getWidth()) {
+                projectile.setLocation(x + 10, projectile.getY());
+            } else {
+                ((Timer) e.getSource()).stop();
+                frame.remove(projectile);
+                frame.revalidate();
+                frame.repaint();
+            }
+        }).start();*/
+    }
+
     @Override
     public void keyTyped(KeyEvent e) {
         // keyTyped reports a character; use keyPressed for movement logic
@@ -195,24 +258,32 @@ public class App extends JFrame implements KeyListener {
             case KeyEvent.VK_A:
                 System.out.println("Key typed: a");
                 movePlayerX -= 10;
+                UpdateAnimation('a');
                 MoveObject(movePlayerX, movePlayerY, player);
                 break;
             case KeyEvent.VK_D:
                 System.out.println("Key typed: d");
                 movePlayerX += 10;
+                UpdateAnimation('d');
                 MoveObject(movePlayerX, movePlayerY, player);
                 break;
             case KeyEvent.VK_W:
                 System.out.println("Key typed: w");
                 movePlayerY -= 10;
+                UpdateAnimation('w');
                 MoveObject(movePlayerX, movePlayerY, player);
                 break;
             case KeyEvent.VK_S:
                 System.out.println("Key typed: s");
                 movePlayerY += 10;
+                UpdateAnimation('s');
                 MoveObject(movePlayerX, movePlayerY, player);
                 break;
-            case KeyEvent.VK_LEFT: // 37
+            case KeyEvent.VK_F:
+                System.out.println("Key typed: f");
+                CreateProjectile(movePlayerX, movePlayerY);
+                break;
+            /*case KeyEvent.VK_LEFT: // 37
                 System.out.println("Key pressed: left arrow");
                 moveEnemyX -= 10;
                 MoveObject(moveEnemyX, moveEnemyY, enemy);
@@ -231,7 +302,7 @@ public class App extends JFrame implements KeyListener {
                 System.out.println("Key pressed: down arrow");
                 moveEnemyY += 10;
                 MoveObject(moveEnemyX, moveEnemyY, enemy);
-                break;
+                break;*/
             default:
                 // no-op
         }
