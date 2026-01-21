@@ -1,5 +1,6 @@
 # Last-Light---Game
 kinda tower defense game
+(ALSO A ATTEMPT TO MAKE A GAME IN A SINGLE FILE)
 
 ## Prerequisites (Windows 11)
 

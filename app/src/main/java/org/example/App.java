@@ -42,7 +42,7 @@ public class App extends JFrame implements KeyListener {
         // Run Graal Python snippets (if available) but continue regardless of outcome
         try (Context context = Context.create("python")) {
             Value string = context.eval("python", "" 
-                + "name = \"name\"\n"
+                + "name = \"f u\"\n"
                 + "print(f'Hello, {name}!')\n"
             );
             System.out.println(string);
@@ -103,7 +103,7 @@ public class App extends JFrame implements KeyListener {
     }
 
     public static void UpdateProjectile(int direction) {
-        System.out.println("UpdateProjectile method called");
+        //System.out.println("UpdateProjectile method called");
         Iterator<JLabel> it = projectiles.iterator();
         while (it.hasNext()) {
             JLabel p = it.next();
