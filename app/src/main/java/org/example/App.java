@@ -3,6 +3,7 @@ package org.example;
 import org.graalvm.polyglot.*; // Import GraalVM Polyglot API "FOR PYTHON INTERPRETER"
 
 import java.util.List;
+import java.util.Iterator;
 import javax.swing.Timer;
 import java.util.ArrayList;
 import java.util.Random;
@@ -15,11 +16,16 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.net.URL;
+import java.awt.Point;
+import java.util.HashMap;
+import java.util.Map;
 
 public class App extends JFrame implements KeyListener {
 
+    public static Map<Point, int[][]> chunkmap = new HashMap<>();
+
+    public static List<JLabel> tiles = new ArrayList<>();
     public static List<JLabel> projectiles = new ArrayList<>();
-    ArrayList<ArrayList<Integer>> chunklist = new ArrayList<>();
     public static Random random = new Random();
     int moveEnemyX = 0;
     int moveEnemyY = 0;
@@ -30,8 +36,6 @@ public class App extends JFrame implements KeyListener {
     public static Integer currentChunkY = 0;
     static JLabel player;
     static JLabel enemy;
-    public static ArrayList<Integer> ChunkmapX = new ArrayList<>();
-    public static ArrayList<Integer> ChunkmapY = new ArrayList<>();
     public static void main(String[] args) {
         App myGame = new App(); // Create an instance of the App class to access non-static methods
 
@@ -88,23 +92,32 @@ public class App extends JFrame implements KeyListener {
             frame.setVisible(true);
             frame.revalidate();
             frame.repaint();
-            InitializeTiles();
+
+            //CreateTiles();
+
+            // Start a timer to update projectile positions
             new Timer(50, e -> {
-                java.util.Iterator<JLabel> it = projectiles.iterator();
-                    while (it.hasNext()) {
-                        JLabel p = it.next();
-                        int x = p.getX();
-                            if (x < frame.getWidth()) {
-                                p.setLocation(x + 10, p.getY());
-                            } else {
-                                frame.remove(p);
-                                it.remove();
-                            }
-                    }
-                    frame.revalidate();
-                    frame.repaint();
+                    UpdateProjectile(0);
                 }).start();
         });
+    }
+
+    public static void UpdateProjectile(int direction) {
+        System.out.println("UpdateProjectile method called");
+        Iterator<JLabel> it = projectiles.iterator();
+        while (it.hasNext()) {
+            JLabel p = it.next();
+            int x = p.getX();
+            if (x < frame.getWidth()) {
+                p.setLocation(x + 10, p.getY());
+            } else {
+                frame.remove(p);
+                it.remove();
+                System.out.println(projectiles.size());
+            }
+        }
+        frame.revalidate();
+        frame.repaint();
     }
 
     public static void UpdateAnimation(char c) {
@@ -143,10 +156,14 @@ public class App extends JFrame implements KeyListener {
             object.setSize(img.getIconWidth(), img.getIconHeight());
     }
 
-    public static void InitializeTiles() {
-        System.out.println("InitializeTiles method called");
+    public static void CreateTiles() {
+        System.out.println("CreateTiles method called");
         int i = 0;
         int j = 0;
+        for (JLabel t : tiles) {
+            frame.remove(t);
+        }
+        tiles.clear();
         int[][] chunk = Generate();
         for (i = 0; i < 9; i++) {
             for (j = 0; j < 9; j++) {
@@ -154,6 +171,7 @@ public class App extends JFrame implements KeyListener {
             }
             System.out.println();
         }
+        storeMaps(chunk);
         for (i = 0; i < 9; i++) {
             for (j = 0; j < 9; j++) {
                 URL url = App.class.getResource("/" + chunk[i][j] + ".png");
@@ -213,10 +231,28 @@ public class App extends JFrame implements KeyListener {
         return label;
     }
 
+    public static void UpdateMap(){
+        System.out.println("UpdateMap method called");
+    }
+
     //Store different maps/chunks of the map
-    private void storeMaps(int chunkx, int chunky) {
-        ChunkmapX.add(chunkx);
-        ChunkmapY.add(chunky);
+    public static void storeMaps(int[][] chunk) {
+        System.out.println("storeMaps method called");
+        chunkmap.put(new Point(currentChunkX, currentChunkY), chunk);
+        System.out.println("Map stored at chunk (" + currentChunkX + ", " + currentChunkY + ")");
+        for (Map.Entry<Point, int[][]> entry : chunkmap.entrySet()) {
+            Point key = entry.getKey();
+            int[][] value = entry.getValue();
+            System.out.println("Chunk at (" + key.x + ", " + key.y + "):");
+            for (int i = 0; i < value.length; i++) {
+                for (int j = 0; j < value[i].length; j++) {
+                    System.out.print(value[i][j] + " ");
+                }
+                System.out.println();
+            }
+        }
+        //currentChunkX++;
+        //currentChunkY++;
     }
 
     public static void CreateProjectile(int movePlayerX, int movePlayerY) {
@@ -282,6 +318,12 @@ public class App extends JFrame implements KeyListener {
             case KeyEvent.VK_F:
                 System.out.println("Key typed: f");
                 CreateProjectile(movePlayerX, movePlayerY);
+                break;
+            case KeyEvent.VK_Q:
+                System.out.println("Key typed: q");
+                CreateTiles();
+                System.out.println(currentChunkX);
+                System.out.println(currentChunkY);
                 break;
             /*case KeyEvent.VK_LEFT: // 37
                 System.out.println("Key pressed: left arrow");
