@@ -22,28 +22,39 @@ import java.util.Map;
 
 public class App extends JFrame implements KeyListener {
 
+    // PYTHON
+    public static Context context = Context.newBuilder("python", "js")  // Enable Python, etc.
+    .allowAllAccess(true)  // Important for Java-Python interop
+    .build();
+
     public static Map<Point, int[][]> chunkmap = new HashMap<>();
 
     public static List<JLabel> tiles = new ArrayList<>();
     public static List<JLabel> projectiles = new ArrayList<>();
     public static Random random = new Random();
-    int moveEnemyX = 0;
-    int moveEnemyY = 0;
-    int movePlayerX = 0;
-    int movePlayerY = 0;
+    public static int moveEnemyX = 0;
+    public static int moveEnemyY = 0;
+    public static int movePlayerX = 0;
+    public static int movePlayerY = 0;
     public static JFrame frame = new JFrame();
     public static Integer currentChunkX = 0;
     public static Integer currentChunkY = 0;
     static JLabel player;
     static JLabel enemy;
     public static void main(String[] args) {
-        App myGame = new App(); // Create an instance of the App class to access non-static methods
+        App myGame = new App(); // Create an instance of the App class to access non-static method
+        Value pythonBindings = context.getBindings("python");
+
+        pythonBindings.putMember("moveEnemyX", moveEnemyX);
+        context.eval("python", "print('Python: moveEnemyX is ' + str(moveEnemyX));");
 
         // Run Graal Python snippets (if available) but continue regardless of outcome
-        try (Context context = Context.create("python")) {
             Value string = context.eval("python", "" 
                 + "name = \"f u\"\n"
+                + "moveEnemyX = 42\n"
                 + "print(f'Hello, {name}!')\n"
+                + "for i in str(moveEnemyX):\n"
+                + "    print(i)\n"
             );
             System.out.println(string);
 
@@ -53,22 +64,20 @@ public class App extends JFrame implements KeyListener {
             // Or get a value back to Java
             Value result = context.eval("python", "10 + 5");
             System.out.println("Result from Python: " + result.asInt());
-        } catch (Exception ex) {
-            // Don't fail the app if Graal/Python isn't available; just log it
-            System.err.println("Graal/Python context failed: " + ex.getMessage());
-        }
 
+        
         // Build the Swing UI on the Event Dispatch Thread
         SwingUtilities.invokeLater(() -> {
             // Start the Swing application by configuring the frame
             frame.setTitle("Last Light");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(400, 300);
             // Use absolute positioning so we can move components with setLocation
             frame.setLayout(null);
             // Make sure the frame is focusable and will receive key events
             frame.setFocusable(true);
             frame.addKeyListener(myGame); // Add key listener to the frame
+            frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
+            frame.setBackground(Color.BLACK);
 
             // Create player label (Object no longer adds it to the frame)
             player = Object("defaultPlayer", Color.RED);
@@ -100,6 +109,22 @@ public class App extends JFrame implements KeyListener {
                     UpdateProjectile(0);
                 }).start();
         });
+
+    }
+
+
+    // A future function for adding extra guns/weapons to the game
+    public static void CurrentWeapon() {
+
+    }
+
+    public static void DefineWeapons() {
+
+    }
+
+    public static int WeaponSpeed() {
+        int test = 0;
+        return test;
     }
 
     public static void UpdateProjectile(int direction) {
@@ -109,7 +134,11 @@ public class App extends JFrame implements KeyListener {
             JLabel p = it.next();
             int x = p.getX();
             if (x < frame.getWidth()) {
-                p.setLocation(x + 10, p.getY());
+
+                // Implement later
+                int ProjectileSpeed = WeaponSpeed();
+                
+                p.setLocation(x + 20, p.getY());
             } else {
                 frame.remove(p);
                 it.remove();
@@ -146,7 +175,7 @@ public class App extends JFrame implements KeyListener {
 
 
     public static void updateicon(String resource, JLabel object) {
-        System.out.println("UpdatePlayerIcon method called");
+        System.out.println("updateicon method called");
         if (resource == null) {
             return; // No update if resource is null
         }
@@ -177,14 +206,15 @@ public class App extends JFrame implements KeyListener {
                 URL url = App.class.getResource("/" + chunk[i][j] + ".png");
                 if (url == null) {
                     System.err.println("Missing resource: /idle" + chunk[i][j] + ".png");
-                } else {
+                } else { 
                     JLabel tile = Object("tile" + i + j, null);
                     ImageIcon tileimg = new ImageIcon(url);
                     tile.setIcon(tileimg);
                     // Ensure the label has the correct size so setLocation/setBounds work
                     int tileWidth = tileimg.getIconWidth();
                     int tileHeight = tileimg.getIconHeight();
-                    tile.setBounds(i * tileWidth, j * tileHeight, tileWidth, tileHeight);
+                    // FIX THE ERROR
+                    tile.setBounds(((tileWidth / (tileWidth * 9)) * currentChunkX) + (i * tileWidth) /*+ tileWidth * currentChunkX*/,((tileHeight / (tileHeight * 9)) * currentChunkY) +  (j * tileWidth) /*+ tileHeight * currentChunkY*/, tileWidth, tileHeight);
                     frame.add(tile);
                 }
             }    
@@ -237,6 +267,7 @@ public class App extends JFrame implements KeyListener {
 
     //Store different maps/chunks of the map
     public static void storeMaps(int[][] chunk) {
+
         System.out.println("storeMaps method called");
         chunkmap.put(new Point(currentChunkX, currentChunkY), chunk);
         System.out.println("Map stored at chunk (" + currentChunkX + ", " + currentChunkY + ")");
@@ -251,8 +282,20 @@ public class App extends JFrame implements KeyListener {
                 System.out.println();
             }
         }
-        //currentChunkX++;
-        //currentChunkY++;
+  
+/*
+        if (currentChunkX == 3) {
+            currentChunkX = 0;
+            currentChunkY++;
+        }
+        if (currentChunkY == 3){
+            currentChunkY = 0;
+        }
+*/
+
+        currentChunkX++;
+        currentChunkY++;
+
     }
 
     public static void CreateProjectile(int movePlayerX, int movePlayerY) {
