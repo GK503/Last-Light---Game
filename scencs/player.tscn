@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://dlwcqp436762e"]
+
+[ext_resource type="Script" uid="uid://crigeadf0d472" path="res://scripts/player.gd" id="1_56rvr"]
+[ext_resource type="Texture2D" uid="uid://rt0a605yul5e" path="res://graphics/player/idle180.png" id="1_yradl"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_56rvr"]
+
+[node name="Player" type="CharacterBody2D" unique_id=884381645]
+collision_layer = 2
+script = ExtResource("1_56rvr")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=599791565]
+texture_filter = 1
+texture = ExtResource("1_yradl")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=611828548]
+shape = SubResource("RectangleShape2D_56rvr")
