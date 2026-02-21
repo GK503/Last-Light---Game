@@ -1,0 +1,12 @@
+63f7b34db8d8cdea90c76aacccf841ec
+::res://::1770088881
+icon.svg::CompressedTexture2D::7070038509560081944::1769924264::1769924277::1::::<><><>0<>0<>1a3a9eb356acf94e6ec0508d86abbbfd<>res://.godot/imported/icon.svg-218a8f2b3041327d8a5756f3a245f83b.ctex::
+README.md::TextFile::-1::1769304154::0::1::::<><><>0<>0<><>::
+::res://graphics/::1769924947
+::res://graphics/player/::1769924953
+idle180.png::CompressedTexture2D::1233953112232747340::1769924930::1769924953::1::::<><><>0<>0<>bb997b76354e9087615d6f45046194a7<>res://.godot/imported/idle180.png-86e09ed0587032beb7ec08851e3b137a.ctex::
+::res://scencs/::1769925925
+game.tscn::PackedScene::8273607708527625540::1769925925::0::1::::<><><>0<>0<><>::uid://dlwcqp436762e::::res://scencs/player.tscn<>uid://c7y1rbrmpuoaq::::res://icon.svg
+player.tscn::PackedScene::7976906482339478726::1769925676::0::1::::<><><>0<>0<><>::uid://crigeadf0d472::::res://scripts/player.gd<>uid://rt0a605yul5e::::res://graphics/player/idle180.png
+::res://scripts/::1769925622
+player.gd::GDScript::5982938181292600535::1769925622::0::1::::<>CharacterBody2D<><>0<>0<><>::
