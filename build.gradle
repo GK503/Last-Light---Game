@@ -1,7 +1,7 @@
 plugins {
     id 'java'
     id 'application'
-    id "org.graalvm.python" version "25.0.1"
+    id 'org.graalvm.buildtools.native' version '0.10.3'   // or latest compatible
 }
 
 group = 'org.example'
@@ -12,8 +12,8 @@ repositories {
 }
 
 dependencies {
-    implementation "org.graalvm.polyglot:polyglot:25.0.1"
-    implementation "org.graalvm.polyglot:python:25.0.1"
+    implementation 'org.graalvm.polyglot:polyglot:25.0.1'
+    implementation 'org.graalvm.python:python:25.0.1'
 }
 
 java {
@@ -21,12 +21,8 @@ java {
     targetCompatibility = JavaVersion.VERSION_17
 }
 
-graalPy {
-    packages = ["numpy==2.1.0", "termcolor==2.2"]
-}
-
 application {
-    mainClass = 'org.example.App'   // <--- replace with your main class
+    mainClass = 'org.example.App'      // make sure this matches your actual class
 }
 
 run {

@@ -1,7 +1,5 @@
 package org.example;
 
-import org.graalvm.polyglot.*; // Import GraalVM Polyglot API "FOR PYTHON INTERPRETER"
-
 import java.util.List;
 import java.util.Iterator;
 import javax.swing.Timer;
@@ -22,10 +20,7 @@ import java.util.Map;
 
 public class App extends JFrame implements KeyListener {
 
-    // PYTHON
-    public static Context context = Context.newBuilder("python", "js")  // Enable Python, etc.
-    .allowAllAccess(true)  // Important for Java-Python interop
-    .build();
+
 
     public static Map<Point, int[][]> chunkmap = new HashMap<>();
 
@@ -43,28 +38,6 @@ public class App extends JFrame implements KeyListener {
     static JLabel enemy;
     public static void main(String[] args) {
         App myGame = new App(); // Create an instance of the App class to access non-static method
-        Value pythonBindings = context.getBindings("python");
-
-        pythonBindings.putMember("moveEnemyX", moveEnemyX);
-        context.eval("python", "print('Python: moveEnemyX is ' + str(moveEnemyX));");
-
-        // Run Graal Python snippets (if available) but continue regardless of outcome
-            Value string = context.eval("python", "" 
-                + "name = \"f u\"\n"
-                + "moveEnemyX = 42\n"
-                + "print(f'Hello, {name}!')\n"
-                + "for i in str(moveEnemyX):\n"
-                + "    print(i)\n"
-            );
-            System.out.println(string);
-
-            // Run a simple script
-            context.eval("python", "print('Hello from Python!')");
-
-            // Or get a value back to Java
-            Value result = context.eval("python", "10 + 5");
-            System.out.println("Result from Python: " + result.asInt());
-
         
         // Build the Swing UI on the Event Dispatch Thread
         SwingUtilities.invokeLater(() -> {

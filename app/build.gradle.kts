@@ -41,9 +41,6 @@ dependencies {
     runtimeOnly("org.openjfx:javafx-fxml:$fxVersion:$javafxPlatform")
     runtimeOnly("org.openjfx:javafx-media:$fxVersion:$javafxPlatform")
     runtimeOnly("org.openjfx:javafx-graphics:$fxVersion:$javafxPlatform")
-
-    implementation("org.graalvm.polyglot:polyglot:25.0.1")
-    implementation("org.graalvm.polyglot:python:25.0.1")
 }
 
 testing {
@@ -83,5 +80,16 @@ application {
 tasks.withType(org.gradle.api.tasks.JavaExec::class.java).configureEach {
     javaLauncher.set(javaToolchains.launcherFor {
         languageVersion.set(org.gradle.jvm.toolchain.JavaLanguageVersion.of(17))
+    })
+}
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "org.example.App"  // Your actual main class
+    }
+    // Also include dependencies for JavaFX/GraalVM to work
+    from(sourceSets.main.get().output)
+    dependsOn(configurations.runtimeClasspath)
+    from({
+        configurations.runtimeClasspath.get().filter { it.name.endsWith("jar") }.map { zipTree(it) }
     })
 }
